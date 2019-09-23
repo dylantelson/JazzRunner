@@ -46,7 +46,7 @@
 		64780185233910F300190355 = {
 			isa = PBXGroup;
 			children = (
-				64780190233910F300190355 /* First Game */,
+				64780190233910F300190355 /* Jazz */,
 				6478018F233910F300190355 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,7 +59,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		64780190233910F300190355 /* First Game */ = {
+		64780190233910F300190355 /* Jazz */ = {
 			isa = PBXGroup;
 			children = (
 				64780191233910F300190355 /* AppDelegate.swift */,
@@ -73,7 +73,7 @@
 				647801A3233910F500190355 /* Info.plist */,
 				647801A923393A9200190355 /* ball 1.png */,
 			);
-			path = "First Game";
+			path = Jazz;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
