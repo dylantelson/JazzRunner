@@ -19,7 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6478018E233910F300190355 /* JazzRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JazzRunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6478018E233910F300190355 /* First Game.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "First Game.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		64780191233910F300190355 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64780193233910F300190355 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		64780195233910F300190355 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
 		64780185233910F300190355 = {
 			isa = PBXGroup;
 			children = (
-				64780190233910F300190355 /* Jazz */,
+				64780190233910F300190355 /* First Game */,
 				6478018F233910F300190355 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,12 +54,12 @@
 		6478018F233910F300190355 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6478018E233910F300190355 /* JazzRunner.app */,
+				6478018E233910F300190355 /* First Game.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		64780190233910F300190355 /* Jazz */ = {
+		64780190233910F300190355 /* First Game */ = {
 			isa = PBXGroup;
 			children = (
 				64780191233910F300190355 /* AppDelegate.swift */,
@@ -73,15 +73,15 @@
 				647801A3233910F500190355 /* Info.plist */,
 				647801A923393A9200190355 /* ball 1.png */,
 			);
-			path = Jazz;
+			path = "First Game";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6478018D233910F300190355 /* JazzRunner */ = {
+		6478018D233910F300190355 /* First Game */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 647801A6233910F500190355 /* Build configuration list for PBXNativeTarget "JazzRunner" */;
+			buildConfigurationList = 647801A6233910F500190355 /* Build configuration list for PBXNativeTarget "First Game" */;
 			buildPhases = (
 				6478018A233910F300190355 /* Sources */,
 				6478018B233910F300190355 /* Frameworks */,
@@ -91,9 +91,9 @@
 			);
 			dependencies = (
 			);
-			name = JazzRunner;
+			name = "First Game";
 			productName = "First Game";
-			productReference = 6478018E233910F300190355 /* JazzRunner.app */;
+			productReference = 6478018E233910F300190355 /* First Game.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -111,7 +111,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 64780189233910F300190355 /* Build configuration list for PBXProject "JazzRunner" */;
+			buildConfigurationList = 64780189233910F300190355 /* Build configuration list for PBXProject "First Game" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -124,7 +124,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6478018D233910F300190355 /* JazzRunner */,
+				6478018D233910F300190355 /* First Game */,
 			);
 		};
 /* End PBXProject section */
@@ -333,7 +333,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		64780189233910F300190355 /* Build configuration list for PBXProject "JazzRunner" */ = {
+		64780189233910F300190355 /* Build configuration list for PBXProject "First Game" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				647801A4233910F500190355 /* Debug */,
@@ -342,7 +342,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		647801A6233910F500190355 /* Build configuration list for PBXNativeTarget "JazzRunner" */ = {
+		647801A6233910F500190355 /* Build configuration list for PBXNativeTarget "First Game" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				647801A7233910F500190355 /* Debug */,
