@@ -11,6 +11,14 @@ import SpriteKit
 import GameplayKit
 
 class GameViewController: UIViewController {
+    
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        return UIRectEdge.all
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,9 +50,5 @@ class GameViewController: UIViewController {
         } else {
             return .all
         }
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return true
     }
 }

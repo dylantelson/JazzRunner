@@ -68,10 +68,10 @@
 				64780197233910F300190355 /* GameScene.swift */,
 				64780199233910F300190355 /* GameViewController.swift */,
 				6478019B233910F300190355 /* Main.storyboard */,
+				647801A923393A9200190355 /* ball 1.png */,
 				6478019E233910F500190355 /* Assets.xcassets */,
 				647801A0233910F500190355 /* LaunchScreen.storyboard */,
 				647801A3233910F500190355 /* Info.plist */,
-				647801A923393A9200190355 /* ball 1.png */,
 			);
 			path = "First Game";
 			sourceTree = "<group>";
