@@ -11,7 +11,7 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    var player = SKSpriteNode()
+    //var player = SKSpriteNode()
     
     var floor1 = SKSpriteNode()
     var floor2 = SKSpriteNode()
@@ -23,12 +23,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ceil3 = SKSpriteNode()
     var ceil4 = SKSpriteNode()
     
+    var topBottom = SKNode()
+    var mediumMedium = SKNode()
+    var topMedium = SKNode()
+    var bottomMedium = SKNode()
+    var cross = SKNode()
+    var threeMedium = SKNode()
+    var topMediumBottom = SKNode()
+    
+    var currSpeed = Float(6)
+    
     var ball = SKSpriteNode()
 
     
     lazy var floors = [floor1, floor2, floor3, floor4]
     lazy var ceils = [ceil1, ceil2, ceil3, ceil4]
     lazy var floorsCeils = [floor1, floor2, floor3, floor4, ceil1, ceil2, ceil3, ceil4]
+    lazy var obstacles = [topBottom, mediumMedium, topMedium, bottomMedium, cross, threeMedium, topMediumBottom]
     
     var currColors = [0,0,0,0,0,0,0,0]
     
@@ -45,6 +56,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var floorColors = [UIColor(red: 0.333, green: 0.254, blue: 0.333, alpha: 1), UIColor(red: 1, green: 0.533, blue: 0.862, alpha: 1)]
     
+    var currObstacle = 0
+    
     override func didMove(to view: SKView) {
         
         let value = UIInterfaceOrientation.landscapeRight.rawValue
@@ -57,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.physicsWorld.gravity = CGVector(dx: 0, dy: -30)
         
-        player = self.childNode(withName: "player") as! SKSpriteNode
+        //player = self.childNode(withName: "player") as! SKSpriteNode
         ball = self.childNode(withName: "ball") as! SKSpriteNode
         initialx = ball.position.x
         initialy = ball.position.y
@@ -72,27 +85,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceil3 = self.childNode(withName: "ceil3") as! SKSpriteNode
         ceil4 = self.childNode(withName: "ceil4") as! SKSpriteNode
         
+        topBottom = self.childNode(withName: "topbottom") as! SKNode
+        mediumMedium = self.childNode(withName: "mediummedium") as! SKNode
+        topMedium = self.childNode(withName: "topmedium") as! SKNode
+        bottomMedium = self.childNode(withName: "bottommedium") as! SKNode
+        cross = self.childNode(withName: "cross") as! SKNode
+        threeMedium = self.childNode(withName: "threemedium") as! SKNode
+        topMediumBottom = self.childNode(withName: "topmediumbottom") as! SKNode
+        
         for floor in floorsCeils {
             floor.color = floorColors[0]
         }
+        
+        obstacles[currObstacle].position.x = screenSize.width + 150
     }
     
     func collisionBetween(player: SKNode, object: SKNode, type: String, floorNum: Int) {
-        onFloor = true
-        var m = 0
-        if(type == "ceil") {
-            m = 4
-        }
-        if(lastTouched == floorNum-1+m && currColors[floorNum-1+m] == 1) {
-            return
-        }
-        lastTouched = floorNum-1+m
-        if(currColors[floorNum-1+m] == 0)  {
-            floorsCeils[floorNum-1+m].color = floorColors[1]
-            currColors[floorNum-1+m] = 1
+        if(type == "saw") {
+            DispatchQueue.main.async {
+                self.reset()
+                return
+            }
         } else {
-            floorsCeils[floorNum-1+m].color = floorColors[0]
-            currColors[floorNum-1+m] = 0
+            onFloor = true
+            ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+            ball.physicsBody?.affectedByGravity = false
+            var m = 0
+            if(type == "ceil") {
+                m = 4
+            }
+            if(lastTouched == floorNum-1+m && currColors[floorNum-1+m] == 1) {
+                return
+            }
+            lastTouched = floorNum-1+m
+            if(currColors[floorNum-1+m] == 0)  {
+                floorsCeils[floorNum-1+m].color = floorColors[1]
+                currColors[floorNum-1+m] = 1
+            } else {
+                floorsCeils[floorNum-1+m].color = floorColors[0]
+                currColors[floorNum-1+m] = 0
+            }
         }
     }
     
@@ -109,17 +141,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if contact.bodyA.node?.name?.prefix(4) == "ceil" {
             collisionBetween(player: contact.bodyB.node!, object: contact.bodyA.node!, type: "ceil", floorNum: Int(String((contact.bodyA.node!.name?.last!)!))!)
         }
+        if contact.bodyA.node?.name == "saw" {
+            collisionBetween(player: contact.bodyB.node!, object: contact.bodyA.node!, type: "saw", floorNum: 0)
+        }
+        if contact.bodyB.node?.name == "saw" {
+            collisionBetween(player: contact.bodyB.node!, object: contact.bodyA.node!, type: "saw", floorNum: 0)
+        }
+    }
+    
+    func newObstacle() {
+        obstacles[currObstacle].position.x = screenSize.width + 150
+//        for saw in obstacles[currObstacle].children {
+//            saw.position.x = 0
+//        }
+        currObstacle = Int.random(in: 0...obstacles.count - 1)
+        obstacles[currObstacle].position.x = screenSize.width + 150
     }
     
     func reset() {
+        newObstacle()
+        currSpeed = 6
         ball.position.x = initialx
         ball.position.y = initialy
         ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
         floors[0].position.x = -375
-        floors[0].position.y = -320
+        floors[0].position.y = -415
         floors[0].color = floorColors[0]
         ceils[0].position.x = -50
-        ceils[0].position.y = 320
+        ceils[0].position.y = 415
         ceils[0].color = floorColors[0]
         for n in 0...floorsCeils.count - 1 {
             currColors[n] = 0
@@ -152,10 +201,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>,
                       with event: UIEvent?) {
-        if(onFloor) {
-            player.physicsBody?.applyImpulse(CGVector(dx: 0, dy:1200))
-            onFloor = false
-        }
+//        if(onFloor) {
+//            player.physicsBody?.applyImpulse(CGVector(dx: 0, dy:1200))
+//            onFloor = false
+//        }
         let touch = touches.first!
         touchedCoords = touch.location(in: self.view)
     }
@@ -165,21 +214,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         releasedCoords = touch.location(in: self.view)
         ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
         ball.physicsBody?.applyImpulse(CGVector(dx: (touchedCoords.x - releasedCoords.x) * 16, dy: (releasedCoords.y - touchedCoords.y) * 16))
+        if(onFloor) {
+            onFloor = false
+        }
+        ball.physicsBody?.affectedByGravity = true
     }
 
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        if(ball.position.x < screenSize.width * -1 || ball.position.y < screenSize.height * -1) {
+        if(ball.position.x < screenSize.width * -1 || ball.position.y < screenSize.height * -1 || ball.position.y > screenSize.height) {
             self.reset()
         }
-        if(player.position.x < -640) {
-            player.physicsBody?.applyImpulse(CGVector(dx: 50, dy: 0))
-        } else if (player.position.x > 520) {
-            player.physicsBody?.applyImpulse(CGVector(dx: -60, dy: 0))
+//        if(player.position.x < -640) {
+//            player.physicsBody?.applyImpulse(CGVector(dx: 50, dy: 0))
+//        } else if (player.position.x > 520) {
+//            player.physicsBody?.applyImpulse(CGVector(dx: -60, dy: 0))
+//        }
+        
+        if(onFloor) {
+            ball.position.x -= CGFloat(currSpeed)
         }
         
+        currSpeed += 0.002
+        
         for n in 0...floors.count - 1 {
-            floors[n].position.x = floors[n].position.x - 10
+            floors[n].position.x -= CGFloat(currSpeed)
             
             if(floors[n].position.x + floors[n].size.width < screenSize.width * -1 + 250) {
                 if(currColors[n] == 0) {
@@ -212,7 +271,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         for n in 0...ceils.count - 1 {
-            ceils[n].position.x = ceils[n].position.x - 10
+            ceils[n].position.x = ceils[n].position.x - CGFloat(currSpeed)
             
             if(ceils[n].position.x + ceils[n].size.width < screenSize.width * -1 + 250) {
                 if(currColors[n + 4] == 0) {
@@ -243,6 +302,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if(ceils[n].position.y < -1 * screenSize.height) {
                 ceils[n].position.y += 75
             }
+        }
+        obstacles[currObstacle].position.x -= CGFloat(currSpeed) * 1.7
+        for saw in obstacles[currObstacle].children {
+            saw.zRotation -= 0.5
+        }
+        if(obstacles[currObstacle].position.x < -1 * screenSize.width - 100) {
+            newObstacle()
         }
     }
 }
