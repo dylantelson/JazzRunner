@@ -16,6 +16,8 @@
 		6478019F233910F500190355 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6478019E233910F500190355 /* Assets.xcassets */; };
 		647801A2233910F500190355 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 647801A0233910F500190355 /* LaunchScreen.storyboard */; };
 		647801AA23393A9200190355 /* ball 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 647801A923393A9200190355 /* ball 1.png */; };
+		64DA6122234089D5008F10FB /* sawshooter_cannon.png in Resources */ = {isa = PBXBuildFile; fileRef = 64DA6121234089D5008F10FB /* sawshooter_cannon.png */; };
+		64DA612423408A87008F10FB /* texture.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64DA612323408A87008F10FB /* texture.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		647801A1233910F500190355 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		647801A3233910F500190355 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		647801A923393A9200190355 /* ball 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ball 1.png"; sourceTree = "<group>"; };
+		64DA6121234089D5008F10FB /* sawshooter_cannon.png */ = {isa = PBXFileReference; explicitFileType = image.png; path = sawshooter_cannon.png; sourceTree = "<group>"; };
+		64DA612323408A87008F10FB /* texture.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = texture.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,8 +66,10 @@
 		64780190233910F300190355 /* First Game */ = {
 			isa = PBXGroup;
 			children = (
+				64DA6120234089D5008F10FB /* textures */,
 				64780191233910F300190355 /* AppDelegate.swift */,
 				64780193233910F300190355 /* GameScene.sks */,
+				64DA612323408A87008F10FB /* texture.xcassets */,
 				64780195233910F300190355 /* Actions.sks */,
 				64780197233910F300190355 /* GameScene.swift */,
 				64780199233910F300190355 /* GameViewController.swift */,
@@ -74,6 +80,14 @@
 				647801A3233910F500190355 /* Info.plist */,
 			);
 			path = "First Game";
+			sourceTree = "<group>";
+		};
+		64DA6120234089D5008F10FB /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				64DA6121234089D5008F10FB /* sawshooter_cannon.png */,
+			);
+			path = textures;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +152,8 @@
 				64780194233910F300190355 /* GameScene.sks in Resources */,
 				6478019F233910F500190355 /* Assets.xcassets in Resources */,
 				647801A2233910F500190355 /* LaunchScreen.storyboard in Resources */,
+				64DA6122234089D5008F10FB /* sawshooter_cannon.png in Resources */,
+				64DA612423408A87008F10FB /* texture.xcassets in Resources */,
 				64780196233910F300190355 /* Actions.sks in Resources */,
 				647801AA23393A9200190355 /* ball 1.png in Resources */,
 			);

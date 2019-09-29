@@ -32,19 +32,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var cross = SKNode()
     var threeMedium = SKNode()
     var topMediumBottom = SKNode()
+    var sawShooter = SKNode()
     
-    var currSpeed = Float(4)
+    var currSpeed = Float(3)
     
     var ball = SKSpriteNode()
     
     var speedMultiplier = Float(1)
     var swipeMultiplier = Float(1)
+    
+    var timer = Timer()
 
     
     lazy var floors = [floor1, floor2, floor3, floor4]
     lazy var ceils = [ceil1, ceil2, ceil3, ceil4]
     lazy var floorsCeils = [floor1, floor2, floor3, floor4, ceil1, ceil2, ceil3, ceil4]
-    lazy var obstacles = [topBottom, mediumMedium, topMedium, bottomMedium, cross, threeMedium, topMediumBottom]
+    lazy var obstacles = [topBottom, mediumMedium, topMedium, bottomMedium, cross, threeMedium, topMediumBottom, sawShooter]
     
     var currColors = [0,0,0,0,0,0,0,0]
     
@@ -65,6 +68,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
+        //way to check current device learned from https://stackoverflow.com/questions/46192280/detect-if-the-device-is-iphone-x
         if UIDevice().userInterfaceIdiom == .phone {
             switch UIScreen.main.nativeBounds.height {
             case 1136:
@@ -79,15 +83,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 swipeMultiplier = 0.925
                 
             case 1920, 2208:
-                speedMultiplier = 1.3
+                print("xs")
+                speedMultiplier = 1.1
                 swipeMultiplier = 0.9
                 
             case 2436:
-                speedMultiplier = 1.4
+                speedMultiplier = 1.35
                 swipeMultiplier = 0.875
                 
             case 2688:
-                speedMultiplier = 1.5
+                speedMultiplier = 1.4
                 swipeMultiplier = 0.85
                 
             default:
@@ -119,6 +124,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceil3 = self.childNode(withName: "ceil3") as! SKSpriteNode
         ceil4 = self.childNode(withName: "ceil4") as! SKSpriteNode
         
+        //learned how to scale nodes from https://stackoverflow.com/questions/32429694/can-i-change-the-size-of-a-sprite-in-xcode-swift
         ball.setScale(0.5)
         
         topBottom = self.childNode(withName: "topbottom") as! SKNode
@@ -128,6 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cross = self.childNode(withName: "cross") as! SKNode
         threeMedium = self.childNode(withName: "threemedium") as! SKNode
         topMediumBottom = self.childNode(withName: "topmediumbottom") as! SKNode
+        sawShooter = self.childNode(withName: "sawshooter") as! SKNode
         
         for floor in floorsCeils {
             floor.color = floorColors[0]
@@ -138,6 +145,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         obstacles[currObstacle].position.x = screenSize.width + 150
+        
+        currSpeed *= speedMultiplier
+        
+        shootSawsRepeat()
+    }
+    
+    func shootSawsRepeat() {
+        timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.shootSaws), userInfo: nil, repeats: true)
+    }
+    
+    @objc func shootSaws() {
+        let newSaw = SKSpriteNode(imageNamed: "small_sawblade")
+        newSaw.name = "saw"
+        sawShooter.addChild(newSaw)
+        newSaw.size = CGSize(width: 70, height: 70)
+        newSaw.position = CGPoint(x: 0, y: -175)
+        newSaw.physicsBody = SKPhysicsBody(circleOfRadius: newSaw.size.width/2)
+        newSaw.physicsBody?.categoryBitMask = 1
+        newSaw.physicsBody?.contactTestBitMask = 2
+        newSaw.physicsBody?.collisionBitMask = 0
+        newSaw.physicsBody?.affectedByGravity = false
+        newSaw.physicsBody?.isDynamic = false
     }
     
     func collisionBetween(player: SKNode, object: SKNode, type: String, floorNum: Int) {
@@ -200,14 +229,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func reset() {
         newObstacle()
-        currSpeed = 4 * speedMultiplier
+        currSpeed = 3 * speedMultiplier
         ball.position.x = initialx
         ball.position.y = initialy
         ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        floors[0].position.x = -375
+        floors[0].position.x = -150
         floors[0].position.y = -180
         floors[0].color = floorColors[0]
-        ceils[0].position.x = -50
+        ceils[0].position.x = 60
         ceils[0].position.y = 180
         ceils[0].color = floorColors[0]
         for n in 0...floorsCeils.count - 1 {
@@ -262,7 +291,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        print(screenSize.width)
         if(ball.position.x < -450 || ball.position.y < screenSize.height * -1 || ball.position.y > screenSize.height) {
             self.reset()
             return
@@ -282,15 +310,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for n in 0...floors.count - 1 {
             floors[n].position.x -= CGFloat(currSpeed)
             
-            if(floors[n].position.x + floors[n].size.width < screenSize.width * -1 + 250) {
+            if(floors[n].position.x + floors[n].size.width / 2 < -450) {
                 if(currColors[n] == 0) {
                     reset()
                     break
                 }
             }
             
-            if(floors[n].position.x + floors[n].size.width < screenSize.width * -1 - floors[n].size.width) {
-                floors[n].position.x = screenSize.width + floors[n].size.width/2 + 20
+            if(floors[n].position.x + floors[n].size.width / 2 < -450) { //screenSize.width * -1 - floors[n].size.width
                 var m = 0
                 if(n == 0) {
                     m = floors.count-1
@@ -298,6 +325,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 else {
                     m = n - 1
                 }
+                floors[n].position.x = floors[m].position.x + floors[n].size.width + 160
 //                if(floors[m].position.y > -1 * screenSize.height / 1.5) {
 //                    floors[n].position.y = floors[m].position.y - CGFloat(Int.random(in: 0 ... 100))
 //                } else if(floors[m].position.y < -1 * screenSize.height) {
@@ -308,22 +336,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 floors[n].color = floorColors[0]
                 currColors[n] = 0
             }
-            if(floors[n].position.y < -1 * screenSize.height) {
-                floors[n].position.y += 75
-            }
+//            if(floors[n].position.y < -1 * screenSize.height) {
+//                floors[n].position.y += 75
+//            }
         }
         for n in 0...ceils.count - 1 {
             ceils[n].position.x = ceils[n].position.x - CGFloat(currSpeed)
             
-            if(ceils[n].position.x + ceils[n].size.width < screenSize.width * -1 + 250) {
+            if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
                 if(currColors[n + 4] == 0) {
                     reset()
                     break
                 }
             }
             
-            if(ceils[n].position.x + ceils[n].size.width < screenSize.width * -1 - ceils[n].size.width) {
-                ceils[n].position.x = screenSize.width + ceils[n].size.width/2 + 20
+            if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
+                //ceils[n].position.x = screenSize.width + ceils[n].size.width/2 + 20
                 var m = 0
                 if(n == 0) {
                     m = ceils.count-1
@@ -331,6 +359,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 else {
                     m = n - 1
                 }
+                ceils[n].position.x = ceils[m].position.x + ceils[n].size.width + 160
 //                if(ceils[m].position.y > screenSize.height) {
 //                    ceils[n].position.y = ceils[m].position.y - CGFloat(Int.random(in: 0 ... 100))
 //                } else if(ceils[m].position.y < screenSize.height / 2) {
@@ -345,9 +374,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ceils[n].position.y += 75
             }
         }
-        obstacles[currObstacle].position.x -= CGFloat(currSpeed) * 1.7
-        for saw in obstacles[currObstacle].children {
-            saw.zRotation -= 0.5
+        if(currObstacle != 7) {
+            obstacles[currObstacle].position.x -= CGFloat(currSpeed) * 1.7
+            for saw in obstacles[currObstacle].children {
+                saw.zRotation -= 0.5
+            }
+        } else {
+            obstacles[currObstacle].position.x -= CGFloat(currSpeed)
+            for saw in obstacles[currObstacle].children {
+                if(saw.name == "saw") {
+                    saw.position.y += 7
+                }
+            }
         }
         if(obstacles[currObstacle].position.x < -1 * screenSize.width - 100) {
             newObstacle()
