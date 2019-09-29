@@ -13,6 +13,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //var player = SKSpriteNode()
     
+    //bigger = has to go left FASTER, swipes have to be less impactful
+    
     var floor1 = SKSpriteNode()
     var floor2 = SKSpriteNode()
     var floor3 = SKSpriteNode()
@@ -31,9 +33,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var threeMedium = SKNode()
     var topMediumBottom = SKNode()
     
-    var currSpeed = Float(6)
+    var currSpeed = Float(4)
     
     var ball = SKSpriteNode()
+    
+    var speedMultiplier = Float(1)
+    var swipeMultiplier = Float(1)
 
     
     lazy var floors = [floor1, floor2, floor3, floor4]
@@ -60,8 +65,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
-        let value = UIInterfaceOrientation.landscapeRight.rawValue
-        UIDevice.current.setValue(value, forKey: "orientation")
+        if UIDevice().userInterfaceIdiom == .phone {
+            switch UIScreen.main.nativeBounds.height {
+            case 1136:
+                speedMultiplier = 1
+                
+            case 1334:
+                speedMultiplier = 1
+                swipeMultiplier = 0.95
+                
+            case 1792:
+                speedMultiplier = 1
+                swipeMultiplier = 0.925
+                
+            case 1920, 2208:
+                speedMultiplier = 1.3
+                swipeMultiplier = 0.9
+                
+            case 2436:
+                speedMultiplier = 1.4
+                swipeMultiplier = 0.875
+                
+            case 2688:
+                speedMultiplier = 1.5
+                swipeMultiplier = 0.85
+                
+            default:
+                speedMultiplier = 1
+            }
+        }
+        
         screenSize = UIScreen.main.bounds
         
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -72,6 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //player = self.childNode(withName: "player") as! SKSpriteNode
         ball = self.childNode(withName: "ball") as! SKSpriteNode
+        ball.position.y = floor1.position.y + floor1.size.height/2
         initialx = ball.position.x
         initialy = ball.position.y
         
@@ -85,6 +119,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceil3 = self.childNode(withName: "ceil3") as! SKSpriteNode
         ceil4 = self.childNode(withName: "ceil4") as! SKSpriteNode
         
+        ball.setScale(0.5)
+        
         topBottom = self.childNode(withName: "topbottom") as! SKNode
         mediumMedium = self.childNode(withName: "mediummedium") as! SKNode
         topMedium = self.childNode(withName: "topmedium") as! SKNode
@@ -95,6 +131,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         for floor in floorsCeils {
             floor.color = floorColors[0]
+            //floor.setScale(0.5)
+        }
+        for obstacle in obstacles {
+            obstacle.setScale(0.5)
         }
         
         obstacles[currObstacle].position.x = screenSize.width + 150
@@ -160,15 +200,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func reset() {
         newObstacle()
-        currSpeed = 6
+        currSpeed = 4 * speedMultiplier
         ball.position.x = initialx
         ball.position.y = initialy
         ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
         floors[0].position.x = -375
-        floors[0].position.y = -415
+        floors[0].position.y = -180
         floors[0].color = floorColors[0]
         ceils[0].position.x = -50
-        ceils[0].position.y = 415
+        ceils[0].position.y = 180
         ceils[0].color = floorColors[0]
         for n in 0...floorsCeils.count - 1 {
             currColors[n] = 0
@@ -213,7 +253,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch = touches.first!
         releasedCoords = touch.location(in: self.view)
         ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        ball.physicsBody?.applyImpulse(CGVector(dx: (touchedCoords.x - releasedCoords.x) * 16, dy: (releasedCoords.y - touchedCoords.y) * 16))
+        ball.physicsBody?.applyImpulse(CGVector(dx: (touchedCoords.x - releasedCoords.x) * CGFloat(16 * swipeMultiplier), dy: (releasedCoords.y - touchedCoords.y) * CGFloat(16 * swipeMultiplier)))
         if(onFloor) {
             onFloor = false
         }
@@ -222,8 +262,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        if(ball.position.x < screenSize.width * -1 || ball.position.y < screenSize.height * -1 || ball.position.y > screenSize.height) {
+        print(screenSize.width)
+        if(ball.position.x < -450 || ball.position.y < screenSize.height * -1 || ball.position.y > screenSize.height) {
             self.reset()
+            return
         }
 //        if(player.position.x < -640) {
 //            player.physicsBody?.applyImpulse(CGVector(dx: 50, dy: 0))
@@ -235,7 +277,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.position.x -= CGFloat(currSpeed)
         }
         
-        currSpeed += 0.002
+        currSpeed *= 1.0004
         
         for n in 0...floors.count - 1 {
             floors[n].position.x -= CGFloat(currSpeed)
