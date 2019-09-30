@@ -42,6 +42,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var swipeMultiplier = Float(1)
     
     var timer = Timer()
+    
+    var currScore = 0
+    var highScore = 0
+    
+    var currScoreText = SKLabelNode()
+    var highScoreText = SKLabelNode()
 
     
     lazy var floors = [floor1, floor2, floor3, floor4]
@@ -66,6 +72,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var currObstacle = 0
     
+    let defaults = UserDefaults.standard
+    
     override func didMove(to view: SKView) {
         
         //way to check current device learned from https://stackoverflow.com/questions/46192280/detect-if-the-device-is-iphone-x
@@ -83,7 +91,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 swipeMultiplier = 0.925
                 
             case 1920, 2208:
-                print("xs")
                 speedMultiplier = 1.1
                 swipeMultiplier = 0.9
                 
@@ -107,6 +114,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         self.physicsWorld.gravity = CGVector(dx: 0, dy: -30)
+        
+        print(defaults.integer(forKey: "highScore"))
+        highScore = defaults.integer(forKey: "highScore")
         
         //player = self.childNode(withName: "player") as! SKSpriteNode
         ball = self.childNode(withName: "ball") as! SKSpriteNode
@@ -136,6 +146,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         topMediumBottom = self.childNode(withName: "topmediumbottom") as! SKNode
         sawShooter = self.childNode(withName: "sawshooter") as! SKNode
         
+        currScoreText = self.childNode(withName: "currscore") as! SKLabelNode
+        highScoreText = self.childNode(withName: "highscore") as! SKLabelNode
+        
+        currScoreText.text = "Score: 0"
+        highScoreText.text = "High Score: " + String(highScore)
+        
         for floor in floorsCeils {
             floor.color = floorColors[0]
             //floor.setScale(0.5)
@@ -151,6 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         shootSawsRepeat()
     }
     
+    //learned to use timers from https://stackoverflow.com/questions/30090309/how-can-i-make-a-function-execute-every-second-in-swift
     func shootSawsRepeat() {
         timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.shootSaws), userInfo: nil, repeats: true)
     }
@@ -183,16 +200,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if(type == "ceil") {
                 m = 4
             }
-            if(lastTouched == floorNum-1+m && currColors[floorNum-1+m] == 1) {
+            if(lastTouched == floorNum-1+m && currColors[floorNum-1+m] % 2 == 1) {
                 return
             }
             lastTouched = floorNum-1+m
-            if(currColors[floorNum-1+m] == 0)  {
+            if(currColors[floorNum-1+m] % 2 == 0)  {
+                if(currColors[floorNum-1+m] == 0) {
+                    currScore += 100
+                    currScoreText.text? = "Score: " + String(currScore)
+                    if(highScore < currScore) {
+                        highScore = currScore
+                        defaults.set(highScore, forKey: "highScore")
+                        highScoreText.text = "High Score: " + String(highScore)
+                    }
+                }
                 floorsCeils[floorNum-1+m].color = floorColors[1]
-                currColors[floorNum-1+m] = 1
+                currColors[floorNum-1+m] += 1
             } else {
                 floorsCeils[floorNum-1+m].color = floorColors[0]
-                currColors[floorNum-1+m] = 0
+                currColors[floorNum-1+m] += 1
             }
         }
     }
@@ -229,6 +255,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func reset() {
         newObstacle()
+        currScore = 0
+        currScoreText.text = "Score: 0"
         currSpeed = 3 * speedMultiplier
         ball.position.x = initialx
         ball.position.y = initialy
@@ -243,7 +271,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             currColors[n] = 0
         }
         for n in 1...floors.count - 1 {
-            currColors[n] = 0
             floors[n].color = floorColors[0]
             floors[n].position.x = floors[n-1].position.x + 900
 //            if(floors[n-1].position.y > screenSize.height / 5) {
@@ -255,7 +282,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //}
         }
         for n in 1...ceils.count - 1 {
-            currColors[n] = 0
             ceils[n].color = floorColors[0]
             ceils[n].position.x = ceils[n-1].position.x + 900
 //            if(ceils[n-1].position.y > screenSize.height) {
@@ -311,7 +337,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             floors[n].position.x -= CGFloat(currSpeed)
             
             if(floors[n].position.x + floors[n].size.width / 2 < -450) {
-                if(currColors[n] == 0) {
+                if(currColors[n] % 2 == 0) {
                     reset()
                     break
                 }
@@ -344,7 +370,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ceils[n].position.x = ceils[n].position.x - CGFloat(currSpeed)
             
             if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
-                if(currColors[n + 4] == 0) {
+                if(currColors[n + 4] % 2 == 0) {
                     reset()
                     break
                 }
