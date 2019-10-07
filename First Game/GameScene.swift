@@ -36,6 +36,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var currSpeed = Float(3)
     
+    var gameIsPaused = false
+    
     var ball = SKSpriteNode()
     
     var speedMultiplier = Float(1)
@@ -68,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var onFloor = true
     var lastTouched = 99
     
-    var floorColors = [UIColor(red: 0.333, green: 0.254, blue: 0.333, alpha: 1), UIColor(red: 1, green: 0.533, blue: 0.862, alpha: 1)]
+    var floorColors = [UIColor(red: 0.26275, green: 0.19216, blue: 0.37255, alpha: 1), UIColor(red: 1, green: 0.533, blue: 0.862, alpha: 1)]
     
     var currObstacle = 0
     
@@ -302,6 +304,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        }
         let touch = touches.first!
         touchedCoords = touch.location(in: self.view)
+        if currScoreText.contains(touch.location(in: self)) {
+            gameIsPaused = true
+            self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -317,104 +323,106 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        if(ball.position.x < -450 || ball.position.y < screenSize.height * -1 || ball.position.y > screenSize.height) {
-            self.reset()
-            return
-        }
-//        if(player.position.x < -640) {
-//            player.physicsBody?.applyImpulse(CGVector(dx: 50, dy: 0))
-//        } else if (player.position.x > 520) {
-//            player.physicsBody?.applyImpulse(CGVector(dx: -60, dy: 0))
-//        }
-        
-        if(onFloor) {
-            ball.position.x -= CGFloat(currSpeed)
-        }
-        
-        currSpeed *= 1.0004
-        
-        for n in 0...floors.count - 1 {
-            floors[n].position.x -= CGFloat(currSpeed)
+        if(!gameIsPaused) {
+            if(ball.position.x < -450 || ball.position.y < screenSize.height * -1 || ball.position.y > screenSize.height) {
+                self.reset()
+                return
+            }
+            //        if(player.position.x < -640) {
+            //            player.physicsBody?.applyImpulse(CGVector(dx: 50, dy: 0))
+            //        } else if (player.position.x > 520) {
+            //            player.physicsBody?.applyImpulse(CGVector(dx: -60, dy: 0))
+            //        }
             
-            if(floors[n].position.x + floors[n].size.width / 2 < -450) {
-                if(currColors[n] % 2 == 0) {
-                    reset()
-                    break
-                }
+            if(onFloor) {
+                ball.position.x -= CGFloat(currSpeed)
             }
             
-            if(floors[n].position.x + floors[n].size.width / 2 < -450) { //screenSize.width * -1 - floors[n].size.width
-                var m = 0
-                if(n == 0) {
-                    m = floors.count-1
+            currSpeed *= 1.0004
+            
+            for n in 0...floors.count - 1 {
+                floors[n].position.x -= CGFloat(currSpeed)
+                
+                if(floors[n].position.x + floors[n].size.width / 2 < -450) {
+                    if(currColors[n] % 2 == 0) {
+                        reset()
+                        break
+                    }
                 }
-                else {
-                    m = n - 1
-                }
-                floors[n].position.x = floors[m].position.x + floors[n].size.width + 160
-//                if(floors[m].position.y > -1 * screenSize.height / 1.5) {
-//                    floors[n].position.y = floors[m].position.y - CGFloat(Int.random(in: 0 ... 100))
-//                } else if(floors[m].position.y < -1 * screenSize.height) {
-//                    floors[n].position.y = floors[m].position.y + CGFloat(Int.random(in: 0 ... 100))
-//                } else {
+                
+                if(floors[n].position.x + floors[n].size.width / 2 < -450) { //screenSize.width * -1 - floors[n].size.width
+                    var m = 0
+                    if(n == 0) {
+                        m = floors.count-1
+                    }
+                    else {
+                        m = n - 1
+                    }
+                    floors[n].position.x = floors[m].position.x + floors[n].size.width + 160
+                    //                if(floors[m].position.y > -1 * screenSize.height / 1.5) {
+                    //                    floors[n].position.y = floors[m].position.y - CGFloat(Int.random(in: 0 ... 100))
+                    //                } else if(floors[m].position.y < -1 * screenSize.height) {
+                    //                    floors[n].position.y = floors[m].position.y + CGFloat(Int.random(in: 0 ... 100))
+                    //                } else {
                     floors[n].position.y = floors[m].position.y //+ CGFloat(Int.random(in: -50 ... 50))
-                //}
-                floors[n].color = floorColors[0]
-                currColors[n] = 0
+                    //}
+                    floors[n].color = floorColors[0]
+                    currColors[n] = 0
+                }
+                //            if(floors[n].position.y < -1 * screenSize.height) {
+                //                floors[n].position.y += 75
+                //            }
             }
-//            if(floors[n].position.y < -1 * screenSize.height) {
-//                floors[n].position.y += 75
-//            }
-        }
-        for n in 0...ceils.count - 1 {
-            ceils[n].position.x = ceils[n].position.x - CGFloat(currSpeed)
-            
-            if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
-                if(currColors[n + 4] % 2 == 0) {
-                    reset()
-                    break
+            for n in 0...ceils.count - 1 {
+                ceils[n].position.x = ceils[n].position.x - CGFloat(currSpeed)
+                
+                if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
+                    if(currColors[n + 4] % 2 == 0) {
+                        reset()
+                        break
+                    }
                 }
-            }
-            
-            if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
-                //ceils[n].position.x = screenSize.width + ceils[n].size.width/2 + 20
-                var m = 0
-                if(n == 0) {
-                    m = ceils.count-1
-                }
-                else {
-                    m = n - 1
-                }
-                ceils[n].position.x = ceils[m].position.x + ceils[n].size.width + 160
-//                if(ceils[m].position.y > screenSize.height) {
-//                    ceils[n].position.y = ceils[m].position.y - CGFloat(Int.random(in: 0 ... 100))
-//                } else if(ceils[m].position.y < screenSize.height / 2) {
-//                    ceils[n].position.y = ceils[m].position.y + CGFloat(Int.random(in: 0 ... 100))
-//                } else {
+                
+                if(ceils[n].position.x + ceils[n].size.width / 2 < -450) {
+                    //ceils[n].position.x = screenSize.width + ceils[n].size.width/2 + 20
+                    var m = 0
+                    if(n == 0) {
+                        m = ceils.count-1
+                    }
+                    else {
+                        m = n - 1
+                    }
+                    ceils[n].position.x = ceils[m].position.x + ceils[n].size.width + 160
+                    //                if(ceils[m].position.y > screenSize.height) {
+                    //                    ceils[n].position.y = ceils[m].position.y - CGFloat(Int.random(in: 0 ... 100))
+                    //                } else if(ceils[m].position.y < screenSize.height / 2) {
+                    //                    ceils[n].position.y = ceils[m].position.y + CGFloat(Int.random(in: 0 ... 100))
+                    //                } else {
                     ceils[n].position.y = ceils[m].position.y //+ CGFloat(Int.random(in: -50 ... 50))
-//                }
-                ceils[n].color = floorColors[0]
-                currColors[n + 4] = 0
-            }
-            if(ceils[n].position.y < -1 * screenSize.height) {
-                ceils[n].position.y += 75
-            }
-        }
-        if(currObstacle != 7) {
-            obstacles[currObstacle].position.x -= CGFloat(currSpeed) * 1.7
-            for saw in obstacles[currObstacle].children {
-                saw.zRotation -= 0.5
-            }
-        } else {
-            obstacles[currObstacle].position.x -= CGFloat(currSpeed)
-            for saw in obstacles[currObstacle].children {
-                if(saw.name == "saw") {
-                    saw.position.y += 7
+                    //                }
+                    ceils[n].color = floorColors[0]
+                    currColors[n + 4] = 0
+                }
+                if(ceils[n].position.y < -1 * screenSize.height) {
+                    ceils[n].position.y += 75
                 }
             }
-        }
-        if(obstacles[currObstacle].position.x < -1 * screenSize.width - 100) {
-            newObstacle()
+            if(currObstacle != 7) {
+                obstacles[currObstacle].position.x -= CGFloat(currSpeed) * 1.7
+                for saw in obstacles[currObstacle].children {
+                    saw.zRotation -= 0.5
+                }
+            } else {
+                obstacles[currObstacle].position.x -= CGFloat(currSpeed)
+                for saw in obstacles[currObstacle].children {
+                    if(saw.name == "saw") {
+                        saw.position.y += 7
+                    }
+                }
+            }
+            if(obstacles[currObstacle].position.x < -1 * screenSize.width - 100) {
+                newObstacle()
+            }
         }
     }
 }
