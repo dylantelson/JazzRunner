@@ -304,10 +304,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        }
         let touch = touches.first!
         touchedCoords = touch.location(in: self.view)
-        if currScoreText.contains(touch.location(in: self)) {
-            gameIsPaused = true
-            self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-        }
+        //uncomment the following when testing out pausing:
+//        if currScoreText.contains(touch.location(in: self)) {
+//            gameIsPaused = true
+//            self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+//        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
