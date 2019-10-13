@@ -252,7 +252,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            saw.position.x = 0
 //        }
         currObstacle = Int.random(in: 0...obstacles.count - 1)
-        obstacles[currObstacle].position.x = screenSize.width + 150
+        obstacles[currObstacle].position.x = screenSize.width + 25
     }
     
     func reset() {
@@ -421,7 +421,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     }
                 }
             }
-            if(obstacles[currObstacle].position.x < -1 * screenSize.width - 100) {
+            if(obstacles[currObstacle].position.x < -1 * screenSize.width + 50) {
                 newObstacle()
             }
         }
